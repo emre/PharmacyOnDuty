@@ -105,12 +105,16 @@ def update_pharmacy_info():
     district_data = []
     for district in districts:
         pharmacies = get_pharmacies_on_duty(session, district, token)
+        if not len(pharmacies):
+            raise ValueError("No pharmacy found.")
         district_data.append({
             "name": district["name"],
             "pharmacies": pharmacies,
             "date": datetime.date.today().strftime("%m-%d-%Y"),
             "slug": unicode_tr.extras.slugify(district["name"])
         })
+
+
     insert_to_redis(district_data)
     print " >> {0} districts updated.".format(len(district_data))
 
