@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import re
-import HTMLParser
-from lxml import html
 import datetime
-import unicodedata
-
-import requests
-import redis
-import unicode_tr.extras
+import HTMLParser
 import json
+import re
+
+import redis
+import requests
+import unicode_tr.extras
+from lxml import html
+
+from conf import REDIS_INFO, REDIS_PREFIX
 
 
 def smart_unicode(text):
@@ -28,9 +29,11 @@ def smart_unicode(text):
 
 
 def insert_to_redis(pharmacies):
-    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    r = redis.StrictRedis(**REDIS_INFO)
     for pharmacy in pharmacies:
-        r.set(pharmacy["slug"], json.dumps(pharmacy))
+        print json.dumps(pharmacy)
+        r.set("{0}:{1}".format(REDIS_PREFIX, pharmacy["slug"]), json.dumps(pharmacy))
+        r.sadd("{0}:districts".format(REDIS_PREFIX), pharmacy["name"])
 
 
 def get_districts():
@@ -97,7 +100,7 @@ def get_pharmacies_on_duty(session, district, token):
     return pharmacies
 
 
-def main():
+def update_pharmacy_info():
     session, token, districts = get_districts()
     district_data = []
     for district in districts:
@@ -105,11 +108,10 @@ def main():
         district_data.append({
             "name": district["name"],
             "pharmacies": pharmacies,
-            "date": datetime.date.today().strftime("%m-%d-%y"),
+            "date": datetime.date.today().strftime("%m-%d-%Y"),
             "slug": unicode_tr.extras.slugify(district["name"])
         })
-
     insert_to_redis(district_data)
     print " >> {0} districts updated.".format(len(district_data))
 
-main()
+update_pharmacy_info()

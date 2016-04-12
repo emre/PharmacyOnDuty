@@ -1,0 +1,5 @@
+lxml
+unicode_tr
+redis
+requests
+flask
