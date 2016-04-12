@@ -14,16 +14,17 @@ from conf import REDIS_INFO, REDIS_PREFIX
 
 
 def smart_unicode(text):
-    html_parser = HTMLParser.HTMLParser()
-    if not isinstance(text, unicode):
-        text = unicode(text, "utf8")
-    text = html_parser.unescape(text)
-    text = text.encode("utf8")
+    if text:
+        html_parser = HTMLParser.HTMLParser()
+        if not isinstance(text, unicode):
+            text = unicode(text, "utf8")
+        text = html_parser.unescape(text)
+        text = text.encode("utf8")
 
-    text = text.replace("Ä±", "ı")
-    text = text.replace("Ä°", "İ")
-    text = text.replace("Å", "ş")
-    text = text.replace("Ä", "ğ")
+        text = text.replace("Ä±", "ı")
+        text = text.replace("Ä°", "İ")
+        text = text.replace("Å", "ş")
+        text = text.replace("Ä", "ğ")
 
     return text
 
@@ -31,7 +32,6 @@ def smart_unicode(text):
 def insert_to_redis(pharmacies):
     r = redis.StrictRedis(**REDIS_INFO)
     for pharmacy in pharmacies:
-        print json.dumps(pharmacy)
         r.set("{0}:{1}".format(REDIS_PREFIX, pharmacy["slug"]), json.dumps(pharmacy))
         r.sadd("{0}:districts".format(REDIS_PREFIX), pharmacy["name"])
 
@@ -82,10 +82,10 @@ def get_pharmacies_on_duty(session, district, token):
         page_source
     )
 
-    addresses = [address.text for address in addresses]
+    addresses = [smart_unicode(address.text) for address in addresses]
     names = [name.text for name in names]
     phone_numbers = [phone_number.text for phone_number in phone_numbers]
-    directions = [direction.text for direction in directions]
+    directions = [smart_unicode(direction.text) for direction in directions]
 
     pharmacies = []
     for i in range(0, len(addresses)):
@@ -113,3 +113,4 @@ def update_pharmacy_info():
         })
     insert_to_redis(district_data)
     print " >> {0} districts updated.".format(len(district_data))
+
