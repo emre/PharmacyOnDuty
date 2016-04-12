@@ -7,4 +7,4 @@ GET http://pharmacy.emre.sh/api/v1/istanbul/
 
 ## Pharmacies (On duty) at spesific district
 
-GET http://pharmacy.emre.sh/api/v1/istanbul/{district_slug}
+GET http://pharmacy.emre.sh/api/v1/istanbul/sisli
