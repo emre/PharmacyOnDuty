@@ -110,7 +110,7 @@ def update_pharmacy_info():
         district_data.append({
             "name": district["name"],
             "pharmacies": pharmacies,
-            "date": datetime.date.today().strftime("%m-%d-%Y"),
+            "date": datetime.date.today().strftime("%d-%m-%Y"),
             "slug": unicode_tr.extras.slugify(district["name"])
         })
 
