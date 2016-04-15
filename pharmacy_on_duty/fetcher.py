@@ -118,3 +118,7 @@ def update_pharmacy_info():
     insert_to_redis(district_data)
     print " >> {0} districts updated.".format(len(district_data))
 
+
+if __name__ == "__main__":
+   update_pharmacy_info()
+
