@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='pharmacy_on_duty',
-    version='0.0.2',
+    version='0.0.3',
     packages=['pharmacy_on_duty'],
     url='https://github.com/emre/PharmacyOnDuty',
     license='MIT',
