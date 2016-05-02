@@ -121,4 +121,3 @@ def update_pharmacy_info():
 
 if __name__ == "__main__":
    update_pharmacy_info()
-

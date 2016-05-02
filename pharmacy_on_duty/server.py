@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import json
-import os
 
 import redis
 import unicode_tr.extras
 from flask import Flask, abort, g, jsonify
+from flask.ext.cors import CORS
 
 from conf import API_SERVER_PREFIX, REDIS_INFO, REDIS_PREFIX
 
 app = Flask(__name__)
+
+CORS(app)
 
 
 @app.before_request

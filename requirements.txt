@@ -3,3 +3,4 @@ unicode_tr
 redis
 requests
 flask
+flask-cors
