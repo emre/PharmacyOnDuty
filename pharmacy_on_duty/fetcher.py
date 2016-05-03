@@ -1,30 +1,24 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import HTMLParser
 import json
 import re
 
+import ftfy
 import redis
 import requests
-import unicode_tr.extras
 from lxml import html
+from unicode_tr.extras import slugify
 
 from conf import REDIS_INFO, REDIS_PREFIX
 
 
 def smart_unicode(text):
     if text:
-        html_parser = HTMLParser.HTMLParser()
         if not isinstance(text, unicode):
             text = unicode(text, "utf8")
-        text = html_parser.unescape(text)
-        text = text.encode("utf8")
 
-        text = text.replace("Ä±", "ı")
-        text = text.replace("Ä°", "İ")
-        text = text.replace("Å", "ş")
-        text = text.replace("Ä", "ğ")
+        text = ftfy.fix_text(text)
 
     return text
 
@@ -70,7 +64,7 @@ def get_pharmacies_on_duty(session, district, token):
     data = 'id={0}&token={1}'.format(district["id"], token)
 
     r = session.post('http://apps.istanbulsaglik.gov.tr/Eczane/nobetci', headers=headers, data=data)
-    page_source = r.text.encode("utf-8")
+    page_source = r.text
     tree = html.fromstring(page_source)
 
     addresses = tree.xpath('//*[@id="adres"]/td[2]/label')
@@ -82,11 +76,10 @@ def get_pharmacies_on_duty(session, district, token):
         page_source
     )
 
-    addresses = [smart_unicode(address.text) for address in addresses]
-    names = [name.text for name in names]
+    addresses = [ftfy.fix_text(unicode(address.text), fix_entities=True) for address in addresses]
+    names = [ftfy.fix_text(name.text, fix_entities=True) for name in names]
     phone_numbers = [phone_number.text for phone_number in phone_numbers]
-    directions = [smart_unicode(direction.text) for direction in directions]
-
+    directions = [direction.text for direction in directions]
     pharmacies = []
     for i in range(0, len(addresses)):
         pharmacies.append({
@@ -111,13 +104,12 @@ def update_pharmacy_info():
             "name": district["name"],
             "pharmacies": pharmacies,
             "date": datetime.date.today().strftime("%d-%m-%Y"),
-            "slug": unicode_tr.extras.slugify(district["name"])
+            "slug": slugify(district["name"])
         })
-
 
     insert_to_redis(district_data)
     print " >> {0} districts updated.".format(len(district_data))
 
 
 if __name__ == "__main__":
-   update_pharmacy_info()
+    update_pharmacy_info()

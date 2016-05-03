@@ -4,3 +4,4 @@ redis
 requests
 flask
 flask-cors
+ftfy

@@ -14,5 +14,5 @@ setup(
             'fetch_pharmacy_data = pharmacy_on_duty.fetcher:update_pharmacy_info',
         ],
     },
-    install_requires=['lxml', 'requests', 'redis', 'flask', 'unicode_tr', 'flask-cors']
+    install_requires=['lxml', 'requests', 'redis', 'flask', 'unicode_tr', 'flask-cors', 'ftfy']
 )
